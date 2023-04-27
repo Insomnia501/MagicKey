@@ -3,8 +3,6 @@ import { useTheme, styled } from '@mui/material/styles';
 import { Box, AppBar, Toolbar, BoxProps } from '@mui/material';
 // hooks
 import useOffSetTop from '../../hooks/useOffSetTop';
-import useResponsive from '../../hooks/useResponsive';
-
 // utils
 import { bgBlur } from '../../utils/cssStyles';
 // config

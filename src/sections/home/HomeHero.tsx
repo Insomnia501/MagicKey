@@ -16,6 +16,8 @@ import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
+import { ethers } from 'ethers';
+import sbtABI from './MKSBT.json';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -111,22 +113,6 @@ export default function HomeHero() {
 
   const [hide, setHide] = useState(false);
 
-  const { data, isError, isLoading } = useTransaction({
-    hash: '0x089fa309971e3f31ab1c380195ff6309e698c09037a459fb9551882c9356f2bf',
-  });
-
-  if (isLoading) {
-    console.log('is Loading');
-  }
-
-  if (isError) {
-    console.log('is Error');
-  }
-
-  if (data) {
-    console.log('data ', data);
-  }
-
   useEffect(
     () =>
       scrollYProgress.onChange((scrollHeight) => {
@@ -171,21 +157,46 @@ function Description() {
   const [success, setSuccess] = useState(false);
   const [isVerifing, setIsVerifing] = useState(false);
   const [isBAYCVerifing, setIsBAYCVerifing] = useState(false);
+  const [alertContent, setAlertContent] = useState('success');
+  var provider;
+  var signer;
+  var sbt;
 
   const handleClose = () => {
     setOpen(false);
     setActiveStep(0);
+    setIsVerifing(false);
   };
 
-  const onClaim = () => {
+  const onVerifyAddress = async() => {
+    setIsVerifing(true);
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    const usdAddr = '0x5edbdc67d24efdefe493a722265a70504ad10b76'; //
+    console.log(sbtABI);
+    sbt = new ethers.Contract(usdAddr, sbtABI.abi, signer);
+    try {
+      const result = await sbt.addAddressPrivacy('0x444444980');
+      setIsVerifing(false);
+      setAlertContent('Address successfully added!')
+      setSuccess(true);
+      console.log(result);
+    } catch (error) {
+      setIsVerifing(false);
+      setAlertContent('Failure!')
+      setSuccess(true);
+      setOpen(false);
+      console.log(error);
+    }
+  }
+
+  const onClaim = async () => {
     setClaim(true);
   };
 
   const onVerify = () => {
-    // setClaim(false);
-    // setHasBayc(true);
     setIsBAYCVerifing(true);
-  }
+  };
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
@@ -205,7 +216,24 @@ function Description() {
     }
   };
 
-  const getSBT = () => {};
+  const getSBT = async () => {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    const usdAddr = '0x5edbdc67d24efdefe493a722265a70504ad10b76'; //
+    console.log(sbtABI);
+    sbt = new ethers.Contract(usdAddr, sbtABI.abi, signer);
+    try {
+      const result = await sbt.safeMint();
+      setAlertContent('Create SBT Successfully');
+      setSuccess(true);
+      console.log(result);
+    } catch (error) {
+      setAlertContent('Failure');
+      setSuccess(true);
+      setOpen(false);
+      console.log(error);
+    }
+  };
 
   const steps = ['Get your own key', 'Add addresss', 'Share'];
   return (
@@ -271,6 +299,9 @@ function Description() {
               paddingBottom: '20px',
               paddingLeft: '40px',
               paddingRight: '40px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             {activeStep === 0 && (
@@ -283,9 +314,8 @@ function Description() {
                 <TextField id="standard-basic" label="Address" variant="standard" />
                 {!isVerifing && (
                   <Button
-                    onClick={() => {
-                      setIsVerifing(true);
-                    }}
+                    onClick={
+                      onVerifyAddress}
                   >
                     Verify
                   </Button>
@@ -341,14 +371,17 @@ function Description() {
             justifyContent: 'center',
           }}
         >
-          <Image src='/assets/bayc.gif' sx={{ width: '100px', height: '100px', borderRadius: '100px'}} />
-          { !isBAYCVerifing && <LaunchButton onClick={onVerify}>Verify</LaunchButton>}
-          { isBAYCVerifing && <CircularProgress sx={{ marginTop: '20px'}} color="success" />}
+          <Image
+            src="/assets/bayc.gif"
+            sx={{ width: '100px', height: '100px', borderRadius: '100px' }}
+          />
+          {!isBAYCVerifing && <LaunchButton onClick={onVerify}>Verify</LaunchButton>}
+          {isBAYCVerifing && <CircularProgress sx={{ marginTop: '20px' }} color="success" />}
         </Box>
       </Modal>
       <Snackbar open={success} autoHideDuration={1000} onClose={handleClose}>
         <MuiAlert onClose={handleAlertClose} severity="success" sx={{ width: '100%' }}>
-          Create Successfully!
+          {alertContent}
         </MuiAlert>
       </Snackbar>
       <Snackbar open={hasBayc} autoHideDuration={1000} onClose={handleClose}>
