@@ -24,7 +24,7 @@ async function calculateSigProof(privateKey: string) {
 }
 
 // for verify the eth_addr hold certain resource
-async function calculateMerkleProof(mainAddr: string) {
+export default async function calculateMerkleProof(mainAddr: string) {
   // Connect to wallet, get address
   const provider = new providers.Web3Provider(window.ethereum as any);
   await provider.send('eth_requestAccounts', []);
