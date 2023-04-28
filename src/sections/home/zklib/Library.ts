@@ -36,7 +36,7 @@ export async function generateMerkleProofCallData(
 ): Promise<[string, BigInt]> {
   const inputs = await generateMerkleCircuitInputJson(
     merkleTree,
-    BigInt(mainAddr),
+    mainAddr,
     BigInt(receiverAddr)
   );
 

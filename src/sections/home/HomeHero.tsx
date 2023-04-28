@@ -20,6 +20,7 @@ import { ethers } from 'ethers';
 import sbtABI from './MKSBT.json';
 import plonkABI from './PlonkVerifier.json';
 import calculateMerkleProof from './zklib/zkutil';
+import poseidon1 from './zklib/Poseidon';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -199,7 +200,9 @@ function Description() {
   const onVerify = async () => {
     setIsBAYCVerifing(true);
     // TODO get main address
-    const [proof, rootVal] = calculatemerkleproof('');
+    const mainAddr = '';
+    const mainAddrHash = await poseidon1(BigInt(mainAddr))
+    const [proof, rootVal] = calculatemerkleproof('mainAddrHash');
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //

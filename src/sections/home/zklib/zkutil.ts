@@ -49,7 +49,8 @@ export default async function calculateMerkleProof(mainAddr: string) {
   //const mtSs = await getFileString(`${zkFilePath}/mt_8192.txt`);
   const mtLeaves: BitInt[] = [];
   for (let i = 0; i < addrCollection.length; i++) {
-    mtLeaves.push(BigInt(addrCollection[i]));
+    const addrHash = await poseidon1(BigInt(addrCollection[i]));
+    mtLeaves.push(addrHash);
   }
   const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
   const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
