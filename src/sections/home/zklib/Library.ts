@@ -102,7 +102,8 @@ async function generateMerkleCircuitInputJson(
   mainAddrBi: BigInt,
   receiverAddr: BigInt
 ): Promise<MerkleCircuitInput> {
-  const mp = mt.getMerkleProof(mainAddrBi);
+  const commitment = await poseidon1(mainAddrBi);
+  const mp = mt.getMerkleProof(commitment);
   const inputObj = {
     root: mt.root.val,
     commitment: mainAddrBi,

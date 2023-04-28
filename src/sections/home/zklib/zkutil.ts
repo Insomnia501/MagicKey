@@ -35,7 +35,7 @@ async function calculateSigProof(privateKey: string) {
 }
 
 // for verify the eth_addr hold certain resource
-export default async function calculateMerkleProof(mainAddr: BigInt) {
+export default async function calculateMerkleProof(mainAddr: string) {
   // Connect to wallet, get address
   const provider = new providers.Web3Provider(window.ethereum as any);
   await provider.send('eth_requestAccounts', []);
@@ -59,10 +59,10 @@ export default async function calculateMerkleProof(mainAddr: BigInt) {
 
   // Load the Merkle Tree locally
   //const mt = MerkleTree.createFromStorageString(mtSs);
-  const mt = MerkleTree.createFromLeaves(mtLeaves)
+  const mt = MerkleTree.createFromLeaves(mtLeaves);
 
   const preTime = new Date().getTime();
-  const [proof, root_val] = await generateMerkleProofCallData(mt, mainAddr, address, wasmBuff, zkeyBuff);
+  const [proof, root_val] = await generateMerkleProofCallData(mt, BigInt(mainAddr), address, wasmBuff, zkeyBuff);
   const elapsed = new Date().getTime() - preTime;
   console.log(`Time to compute proof: ${elapsed}ms`);
   return [proof, root_val];
