@@ -33,7 +33,7 @@ export async function generateMerkleProofCallData(
   receiverAddr: string,
   circuitWasmBuffer: Buffer,
   zkeyBuffer: Buffer
-): Promise<string> {
+): Promise<[string, BigInt]> {
   const inputs = await generateMerkleCircuitInputJson(
     merkleTree,
     BigInt(mainAddr),
@@ -53,7 +53,7 @@ export async function generateMerkleProofCallData(
     pubProcessed
   );
   const solCallDataProof = allSolCallData.split(',')[0];
-  return solCallDataProof;
+  return [solCallDataProof, inputs['root']];
 }
  
 

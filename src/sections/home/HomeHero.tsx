@@ -199,7 +199,7 @@ function Description() {
   const onVerify = async () => {
     setIsBAYCVerifing(true);
     // TODO Get the root and proof
-    const proof = calculateMerkleProof('')
+    const [proof, root_val] = calculateMerkleProof('')
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
