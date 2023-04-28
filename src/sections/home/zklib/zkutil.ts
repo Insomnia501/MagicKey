@@ -2,6 +2,17 @@ import { providers } from 'ethers';
 import { generateSigProofCallData, generateMerkleProofCallData } from './Library';
 import { MerkleTree } from './MerkleTree';
 
+const addr_collection = [
+  "0xdb5485C85Bd95f38f9def0cA85499eF67dC581c0",
+  "0xDBfD76AF2157Dc15eE4e57F3f942bB45Ba84aF24",
+  "0xe2A83b15FC300D8457eB9E176f98d92a8FF40a49",
+  "0x08c1AE7E46D4A13b766566033b5C47c735e19F6f",
+  "0x98E711f31E49C2e50C1A290b6F2b1e493E43EA76",
+  "0xf090Eb4c2B63e7B26E8Bb09e6Fc0cC3A7586263B",
+  "0xF02e86D9E0eFd57aD034FaF52201B79917fE0713",
+  "0xF02e86D9E0eFd57aD034FaF52201B79917fE0713"
+]
+
 // for verify the eth_addr ownership
 async function calculateSigProof(privateKey: string) {
   // Connect to wallet, get address
