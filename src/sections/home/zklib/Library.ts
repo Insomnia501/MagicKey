@@ -3,58 +3,58 @@ import { poseidon1 } from './Poseidon';
 
 const snarkjs = require('snarkjs');
 
-// export async function generateSigProofCallData(
-//   privateKey: string,
-//   circuitWasmBuffer: Buffer,
-//   zkeyBuffer: Buffer
-// ): Promise<string> {
-//   const privateKeyChunks = splitPrivateKey(privateKey);
-//   const inputs = await generateSigCircuitInputJson(privateKeyChunks);
-//   console.log('Debug::start prove');
-//   const { proof, publicSignals } = await snarkjs.plonk.fullProve(
-//     inputs,
-//     circuitWasmBuffer,
-//     zkeyBuffer
-//   );
-//   console.log('Debug::end prove');
-//   const proofProcessed = unstringifyBigInts(proof);
-//   const pubProcessed = unstringifyBigInts(publicSignals);
-//   const allSolCallData: string = await snarkjs.plonk.exportSolidityCallData(
-//     proofProcessed,
-//     pubProcessed
-//   );
-//   const solCallDataProof = allSolCallData.split(',')[0];
-//   return solCallDataProof;
-// }
+export async function generateSigProofCallData(
+  privateKey: string,
+  circuitWasmBuffer: Buffer,
+  zkeyBuffer: Buffer
+): Promise<string> {
+  const privateKeyChunks = splitPrivateKey(privateKey);
+  const inputs = await generateSigCircuitInputJson(privateKeyChunks);
+  console.log('Debug::start prove');
+  const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+    inputs,
+    circuitWasmBuffer,
+    zkeyBuffer
+  );
+  console.log('Debug::end prove');
+  const proofProcessed = unstringifyBigInts(proof);
+  const pubProcessed = unstringifyBigInts(publicSignals);
+  const allSolCallData: string = await snarkjs.plonk.exportSolidityCallData(
+    proofProcessed,
+    pubProcessed
+  );
+  const solCallDataProof = allSolCallData.split(',')[0];
+  return solCallDataProof;
+}
 
-// export async function generateMerkleProofCallData(
-//   merkleTree: MerkleTree,
-//   mainAddr: BigInt,
-//   receiverAddr: string,
-//   circuitWasmBuffer: Buffer,
-//   zkeyBuffer: Buffer
-// ): Promise<string> {
-//   const inputs = await generateMerkleCircuitInputJson(
-//     merkleTree,
-//     BigInt(mainAddr),
-//     BigInt(receiverAddr)
-//   );
+export async function generateMerkleProofCallData(
+  merkleTree: MerkleTree,
+  mainAddr: BigInt,
+  receiverAddr: string,
+  circuitWasmBuffer: Buffer,
+  zkeyBuffer: Buffer
+): Promise<string> {
+  const inputs = await generateMerkleCircuitInputJson(
+    merkleTree,
+    BigInt(mainAddr),
+    BigInt(receiverAddr)
+  );
 
-//   const { proof, publicSignals } = await snarkjs.plonk.fullProve(
-//     inputs,
-//     circuitWasmBuffer,
-//     zkeyBuffer
-//   );
+  const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+    inputs,
+    circuitWasmBuffer,
+    zkeyBuffer
+  );
 
-//   const proofProcessed = unstringifyBigInts(proof);
-//   const pubProcessed = unstringifyBigInts(publicSignals);
-//   const allSolCallData: string = await snarkjs.plonk.exportSolidityCallData(
-//     proofProcessed,
-//     pubProcessed
-//   );
-//   const solCallDataProof = allSolCallData.split(',')[0];
-//   return solCallDataProof;
-// }
+  const proofProcessed = unstringifyBigInts(proof);
+  const pubProcessed = unstringifyBigInts(publicSignals);
+  const allSolCallData: string = await snarkjs.plonk.exportSolidityCallData(
+    proofProcessed,
+    pubProcessed
+  );
+  const solCallDataProof = allSolCallData.split(',')[0];
+  return solCallDataProof;
+}
  
 
 function splitPrivateKey(privateKeyHex: string): number[] {
