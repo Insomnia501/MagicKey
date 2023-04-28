@@ -18,6 +18,7 @@ import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ethers } from 'ethers';
 import sbtABI from './MKSBT.json';
+import plonkABI from './PlonkVerifier.json';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -194,8 +195,24 @@ function Description() {
     setClaim(true);
   };
 
-  const onVerify = () => {
+  const onVerify = async () => {
     setIsBAYCVerifing(true);
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
+    console.log(plonkABI);
+    const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
+    try {
+      const result = await plonk.verifyProof();
+      setAlertContent('Verify Successfully!');
+      setSuccess(true);
+      console.log(result);
+    } catch (error) {
+      setAlertContent('Failure');
+      setSuccess(true);
+      setOpen(false);
+      console.log(error);
+    }
   };
 
   const handleBack = () => {
