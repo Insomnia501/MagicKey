@@ -11,7 +11,6 @@ import useResponsive from '../../../hooks/useResponsive';
 // config
 import { HEADER, NAV } from '../../../config-global';
 import { useSettingsContext } from '../../../components/settings';
-import WalletConnectButton from './WalletConnectButton';
 
 type Props = {
   onOpenNav: (value: number) => {};
@@ -58,7 +57,6 @@ export default function Header({ onOpenNav }: Props) {
         </Tabs>
       </Stack>
       <Box sx={{ flexGrow: 1, height: 1 }} />
-      <WalletConnectButton />
     </>
   );
 

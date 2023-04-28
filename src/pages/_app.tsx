@@ -50,11 +50,6 @@ import SnackbarProvider from '../components/snackbar';
 import { MotionLazyContainer } from '../components/animate';
 import { ThemeSettings, SettingsProvider } from '../components/settings';
 
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
-import { Web3Modal } from '@web3modal/react';
-import { arbitrum, avalanche, bsc, fantom, gnosis, mainnet, optimism, polygon } from 'wagmi/chains';
-import { configureChains, createClient, goerli, WagmiConfig } from 'wagmi';
-
 // Check our docs
 // https://docs.minimals.cc/authentication/ts-version
 
@@ -76,22 +71,6 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
   Component: NextPageWithLayout;
 }
-
-const projectId = '3d728dd6d15f9796b2706537604d0d9b';
-
-// 2. Configure wagmi client
-// const chains = [mainnet, polygon, avalanche, arbitrum, bsc, optimism, gnosis, fantom];
-const chains = [goerli];
-
-const { provider } = configureChains(chains, [w3mProvider({ projectId })]);
-const wagmiClient = createClient({
-  autoConnect: true,
-  connectors: w3mConnectors({ version: 1, chains, projectId }),
-  provider,
-});
-
-// 3. Configure modal ethereum client
-const ethereumClient = new EthereumClient(wagmiClient, chains);
 
 export default function MyApp(props: MyAppProps) {
   // this manifest is used temporarily for development purposes
@@ -126,9 +105,7 @@ export default function MyApp(props: MyAppProps) {
                           <SnackbarProvider>
                             <StyledChart />
                             <ProgressBar />
-                            <WagmiConfig client={wagmiClient}>
-                              {getLayout(<Component {...pageProps} />)}
-                            </WagmiConfig>
+                            {getLayout(<Component {...pageProps} />)}
                           </SnackbarProvider>
                         </ThemeLocalization>
                         {/* </ThemeSettings> */}
@@ -141,8 +118,6 @@ export default function MyApp(props: MyAppProps) {
           </AuthProvider>
         </CacheProvider>
       ) : null}
-
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
     </>
   );
 }
