@@ -19,6 +19,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { ethers } from 'ethers';
 import sbtABI from './MKSBT.json';
 import plonkABI from './PlonkVerifier.json';
+import calculateMerkleProof from './zklib/zkutil';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -197,13 +198,15 @@ function Description() {
 
   const onVerify = async () => {
     setIsBAYCVerifing(true);
+    // TODO Get the root and proof
+    const proof = calculateMerkleProof('')
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
     console.log(plonkABI);
     const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
     try {
-      const result = await plonk.verifyProof();
+      const result = await plonk.verifyProof(proof, );
       setAlertContent('Verify Successfully!');
       setSuccess(true);
       console.log(result);

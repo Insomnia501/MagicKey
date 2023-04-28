@@ -23,7 +23,7 @@ async function calculateSigProof(privateKey: string, proof: string) {
 }
 
 // for verify the eth_addr hold certain resource
-async function calculateMerkleProof(mainAddr: string, proof: string) {
+export default async function calculateMerkleProof(mainAddr: string) {
   // Connect to wallet, get address
   const provider = new providers.Web3Provider(window.ethereum as any);
   await provider.send('eth_requestAccounts', []);
@@ -44,9 +44,10 @@ async function calculateMerkleProof(mainAddr: string, proof: string) {
 
   const preTime = new Date().getTime();
   const biMainAddr = BigInt(mainAddr);
-  proof = await generateMerkleProofCallData(mt, biMainAddr, address, wasmBuff, zkeyBuff);
+  const proof = await generateMerkleProofCallData(mt, biMainAddr, address, wasmBuff, zkeyBuff);
   const elapsed = new Date().getTime() - preTime;
   console.log(`Time to compute proof: ${elapsed}ms`);
+  return proof;
 }
 
 
