@@ -2,7 +2,7 @@ import { providers } from 'ethers';
 import { generateSigProofCallData, generateMerkleProofCallData } from './Library';
 import { MerkleTree } from './MerkleTree';
 
-const addr_collection = [
+const addrCollection = [
   "0xdb5485C85Bd95f38f9def0cA85499eF67dC581c0",
   "0xDBfD76AF2157Dc15eE4e57F3f942bB45Ba84aF24",
   "0xe2A83b15FC300D8457eB9E176f98d92a8FF40a49",
@@ -48,8 +48,8 @@ export default async function calculateMerkleProof(mainAddr: string) {
   // TODO: address set
   //const mtSs = await getFileString(`${zkFilePath}/mt_8192.txt`);
   const mtLeaves: BitInt[] = [];
-  for (let i = 0; i < addr_collection.length; i++) {
-    mtLeaves.push(BigInt(addr_collection[i]));
+  for (let i = 0; i < addrCollection.length; i++) {
+    mtLeaves.push(BigInt(addrCollection[i]));
   }
   const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
   const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
