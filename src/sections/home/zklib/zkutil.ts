@@ -1,6 +1,7 @@
 import { providers } from 'ethers';
 import { generateSigProofCallData, generateMerkleProofCallData } from './Library';
 import { MerkleTree } from './MerkleTree';
+import poseidon1 from './Poseidon';
 
 const addrCollection = [
   "0xdb5485C85Bd95f38f9def0cA85499eF67dC581c0",
@@ -56,11 +57,10 @@ export default async function calculateMerkleProof(mainAddr: BigInt) {
   const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
   console.log(wasmBuff);
   const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
-
+  console.log(zkeyBuff);
   // Load the Merkle Tree locally
   //const mt = MerkleTree.createFromStorageString(mtSs);
-  const mt = MerkleTree.createFromLeaves(mtLeaves)
-
+  const mt = await MerkleTree.createFromLeaves(mtLeaves)
   const preTime = new Date().getTime();
   const [proof, root_val] = await generateMerkleProofCallData(mt, mainAddr, address, wasmBuff, zkeyBuff);
   const elapsed = new Date().getTime() - preTime;

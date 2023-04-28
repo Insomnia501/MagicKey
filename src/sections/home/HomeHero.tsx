@@ -203,21 +203,23 @@ function Description() {
     const mainAddrHash = await poseidon1(BigInt(mainAddr));
     console.log(mainAddrHash);
     const [proof, rootVal] = await calculateMerkleProof(mainAddrHash);
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
-    const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
-    const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
-    const signals = [rootVal, mainAddrHash];
-    try {
-      const result = await plonk.verifyProof(proof, signals);
-      setAlertContent('Verify Successfully!');
-      setSuccess(true);
-      console.log(result);
-    } catch (error) {
-      setAlertContent('Failure');
-      setSuccess(true);
-      setOpen(false);
-    }
+    console.log(proof);
+    console.log(rootVal);
+    // provider = new ethers.providers.Web3Provider(window.ethereum);
+    // signer = provider.getSigner();
+    // const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
+    // const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
+    // const signals = [rootVal, mainAddrHash];
+    // try {
+    //   const result = await plonk.verifyProof(proof, signals);
+    //   setAlertContent('Verify Successfully!');
+    //   setSuccess(true);
+    //   console.log(result);
+    // } catch (error) {
+    //   setAlertContent('Failure');
+    //   setSuccess(true);
+    //   setOpen(false);
+    // }
   };
 
   const handleBack = () => {
