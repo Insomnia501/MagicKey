@@ -20,6 +20,7 @@ import { ethers } from 'ethers';
 import sbtABI from './MKSBT.json';
 import plonkABI from './PlonkVerifier.json';
 import calculateMerkleProof from './zklib/zkutil';
+import poseidon1 from './zklib/Poseidon';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -198,15 +199,17 @@ function Description() {
 
   const onVerify = async () => {
     setIsBAYCVerifing(true);
-    // TODO get main address
-    const [proof, rootVal] = calculateMerkleProof('');
+    const mainAddr = '0xF02e86D9E0eFd57aD034FaF52201B79917fE0713';
+    const mainAddrHash = await poseidon1(BigInt(mainAddr));
+    console.log(mainAddrHash);
+    const [proof, rootVal] = await calculateMerkleProof(mainAddrHash);
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
-    console.log(plonkABI);
     const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
+    const signals = [rootVal, mainAddrHash];
     try {
-      const result = await plonk.verifyProof(proof, );
+      const result = await plonk.verifyProof(proof, signals);
       setAlertContent('Verify Successfully!');
       setSuccess(true);
       console.log(result);
@@ -214,7 +217,6 @@ function Description() {
       setAlertContent('Failure');
       setSuccess(true);
       setOpen(false);
-      console.log(error);
     }
   };
 

@@ -1,5 +1,5 @@
 import { MerkleTree } from './MerkleTree';
-import { poseidon1 } from './Poseidon';
+import poseidon1 from './Poseidon';
 
 const snarkjs = require('snarkjs');
 
@@ -36,7 +36,7 @@ export async function generateMerkleProofCallData(
 ): Promise<[string, BigInt]> {
   const inputs = await generateMerkleCircuitInputJson(
     merkleTree,
-    BigInt(mainAddr),
+    mainAddr,
     BigInt(receiverAddr)
   );
 
@@ -102,12 +102,10 @@ async function generateMerkleCircuitInputJson(
   mainAddrBi: BigInt,
   receiverAddr: BigInt
 ): Promise<MerkleCircuitInput> {
-  const commitment = await poseidon1(mainAddrBi);
-  const mp = mt.getMerkleProof(commitment);
-
+  const mp = mt.getMerkleProof(mainAddrBi);
   const inputObj = {
     root: mt.root.val,
-    commitment,
+    commitment: mainAddrBi,
     pathIndices: mp.indices,
     pathElements: mp.vals,
     recipient: receiverAddr,
@@ -135,11 +133,4 @@ function unstringifyBigInts(o: any): any {
     return res;
   }
   return o;
-}
-
-function toBufferLE(bi: BigInt, width: number): Buffer {
-  const hex = bi.toString(16);
-  const buffer = Buffer.from(hex.padStart(width * 2, '0').slice(0, width * 2), 'hex');
-  buffer.reverse();
-  return buffer;
 }

@@ -3,7 +3,7 @@ import { buildPoseidon } from "circomlibjs";
 
 let poseidonHasher: any;
 
-export async function poseidon1(item: BigInt): Promise<BigInt> {
+export default async function poseidon1(item: BigInt): Promise<BigInt> {
     if (!poseidonHasher) {
         poseidonHasher = await buildPoseidon()
     }
@@ -11,10 +11,10 @@ export async function poseidon1(item: BigInt): Promise<BigInt> {
     return BigInt(poseidonHasher.F.toString(poseidonHasher([item])))
 }
 
-export async function poseidon2(first: BigInt, second: BigInt): Promise<BigInt> {
-    if (!poseidonHasher) {
-        poseidonHasher = await buildPoseidon()
-    }
+// export async function poseidon2(first: BigInt, second: BigInt): Promise<BigInt> {
+//     if (!poseidonHasher) {
+//         poseidonHasher = await buildPoseidon()
+//     }
 
-    return BigInt(poseidonHasher.F.toString(poseidonHasher([first,second])))
-}
+//     return BigInt(poseidonHasher.F.toString(poseidonHasher([first,second])))
+// }

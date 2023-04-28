@@ -10,7 +10,7 @@ const addrCollection = [
   "0x98E711f31E49C2e50C1A290b6F2b1e493E43EA76",
   "0xf090Eb4c2B63e7B26E8Bb09e6Fc0cC3A7586263B",
   "0xF02e86D9E0eFd57aD034FaF52201B79917fE0713",
-  "0xF02e86D9E0eFd57aD034FaF52201B79917fE0713"
+  "0xd99cEbf3C817D7360F46ED055194034d63C255E3"
 ]
 
 // for verify the eth_addr ownership
@@ -35,7 +35,7 @@ async function calculateSigProof(privateKey: string) {
 }
 
 // for verify the eth_addr hold certain resource
-export default async function calculateMerkleProof(mainAddr: string) {
+export default async function calculateMerkleProof(mainAddr: BigInt) {
   // Connect to wallet, get address
   const provider = new providers.Web3Provider(window.ethereum as any);
   await provider.send('eth_requestAccounts', []);
@@ -47,11 +47,14 @@ export default async function calculateMerkleProof(mainAddr: string) {
   const zkFilePath = '../../../../public/circuits';
   // TODO: address set
   //const mtSs = await getFileString(`${zkFilePath}/mt_8192.txt`);
-  const mtLeaves: BitInt[] = [];
+  const mtLeaves: BigInt[] = [];
   for (let i = 0; i < addrCollection.length; i++) {
-    mtLeaves.push(BigInt(addrCollection[i]));
+    const addrHash = await poseidon1(BigInt(addrCollection[i]));
+    mtLeaves.push(addrHash);
   }
+  console.log(mtLeaves);
   const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
+  console.log(wasmBuff);
   const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
 
   // Load the Merkle Tree locally
@@ -59,8 +62,7 @@ export default async function calculateMerkleProof(mainAddr: string) {
   const mt = MerkleTree.createFromLeaves(mtLeaves)
 
   const preTime = new Date().getTime();
-  const biMainAddr = BigInt(mainAddr);
-  const [proof, root_val] = await generateMerkleProofCallData(mt, biMainAddr, address, wasmBuff, zkeyBuff);
+  const [proof, root_val] = await generateMerkleProofCallData(mt, mainAddr, address, wasmBuff, zkeyBuff);
   const elapsed = new Date().getTime() - preTime;
   console.log(`Time to compute proof: ${elapsed}ms`);
   return [proof, root_val];
