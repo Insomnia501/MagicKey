@@ -39,7 +39,6 @@ export async function generateMerkleProofCallData(
     mainAddr,
     BigInt(receiverAddr)
   );
-
   const { proof, publicSignals } = await snarkjs.plonk.fullProve(
     inputs,
     circuitWasmBuffer,

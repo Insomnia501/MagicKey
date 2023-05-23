@@ -200,22 +200,25 @@ function Description() {
   const onVerify = async () => {
     setIsBAYCVerifing(true);
     const mainAddr = '0xF02e86D9E0eFd57aD034FaF52201B79917fE0713';
-    const [proof, rootVal] = await calculateMerkleProof(mainAddr);
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     const receiverAddr = await signer.getAddress();
-    const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8'; //
+    console.log(receiverAddr);
+    //const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8';//old contract address
+    const usdAddr = '0x65cafc0f6cc8b25ad20f59a98f72b7c5535510cc';
     const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
-    const signals = [rootVal, BigInt(receiverAddr)];
     try {
+      const [proof, rootVal] = await calculateMerkleProof(mainAddr);
+      const signals = [rootVal, BigInt(receiverAddr)];
       const result = await plonk.verifyProof(proof, signals);
       setAlertContent('Verify Successfully!');
-      setSuccess(true);
+      setSuccess(result);
       console.log(result);
     } catch (error) {
       setAlertContent('Failure');
-      setSuccess(true);
+      setSuccess(false);
       setOpen(false);
+      console.log('false');
     }
   };
 

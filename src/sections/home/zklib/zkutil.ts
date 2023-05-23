@@ -23,8 +23,8 @@ async function calculateSigProof(privateKey: string) {
   const address = await signer.getAddress();
 
   // Load files and run proof locally
-  // TODO: zkey file path
-  const zkFilePath = '';
+  // TODO: sig proof file path
+  const zkFilePath = '../../../../public/circuits';
   const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
   const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
 
@@ -45,7 +45,8 @@ export default async function calculateMerkleProof(mainAddr: string) {
 
   // Load files and run proof locally
   // TODO: zkey file path
-  const zkFilePath = '../../../../public/circuits';
+  //const zkFilePath = '../../../../public/circuits';
+  const zkFilePath = 'http://localhost:8082';
   // TODO: address set
   //const mtSs = await getFileString(`${zkFilePath}/mt_8192.txt`);
   const mtLeaves: BigInt[] = [];
@@ -53,14 +54,13 @@ export default async function calculateMerkleProof(mainAddr: string) {
     const addrHash = await poseidon1(BigInt(addrCollection[i]));
     mtLeaves.push(addrHash);
   }
-  console.log(mtLeaves);
-  const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
-  console.log(wasmBuff);
-  const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
-  console.log(zkeyBuff);
+  const wasmBuff = await getFileBuffer(`${zkFilePath}/circuits/circuit.wasm`);
+  //console.log(wasmBuff.toString('hex'));
+  const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuits/circuit_final.zkey`);
+  //console.log(zkeyBuff);
   // Load the Merkle Tree locally
   //const mt = MerkleTree.createFromStorageString(mtSs);
-  const mt = await MerkleTree.createFromLeaves(mtLeaves)
+  const mt = await MerkleTree.createFromLeaves(mtLeaves);
   const preTime = new Date().getTime();
   const [proof, root_val] = await generateMerkleProofCallData(mt, BigInt(mainAddr), address, wasmBuff, zkeyBuff);
   const elapsed = new Date().getTime() - preTime;
