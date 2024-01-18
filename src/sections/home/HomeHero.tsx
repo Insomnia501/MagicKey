@@ -19,7 +19,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { ethers } from 'ethers';
 import sbtABI from './MKSBT.json';
 import plonkABI from './PlonkVerifier.json';
-import calculateMerkleProof from './zklib/zkutil';
+import groth16ABI from './Verifier.json';
+import { calculateMerkleProof, calculateSigProof } from './zklib/zkutil';
 import poseidon1 from './zklib/Poseidon';
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -171,23 +172,35 @@ function Description() {
     setIsVerifing(false);
   };
 
+  // verify the signature and add main_address into sbt 
   const onVerifyAddress = async() => {
     setIsVerifing(true);
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
-    const usdAddr = '0x5edbdc67d24efdefe493a722265a70504ad10b76'; //
-    console.log(sbtABI);
+    const receiverAddr = await signer.getAddress();
+    const usdAddr = ''; //MKSBT contract address
     sbt = new ethers.Contract(usdAddr, sbtABI.abi, signer);
+    const verifierAddr = ''; //verifier contract address
+    const sigVerifier = new ethers.Contract(verifierAddr, groth16ABI.abi, signer);
     try {
-      const result = await sbt.addAddressPrivacy('0x444444980');
+      // TODO:get the key by blank "______" from web page
+      const privateKey = '';//pk!but no asset
+      const proof = await calculateSigProof(privateKey);
+      const signals = [receiverAddr];
+      const result = await sigVerifier.verifyProof(proof[0], proof[1], proof[2], proof[3]);
+      if (!result) {
+        throw new Error("verify failed");
+      }
+      const ret = await sbt.addAddressPrivacy(privateKey);
+      //console.log(ret);
       setIsVerifing(false);
-      setAlertContent('Address successfully added!')
+      setAlertContent('Address successfully added!');
       setSuccess(true);
-      console.log(result);
+      
     } catch (error) {
       setIsVerifing(false);
-      setAlertContent('Failure!')
-      setSuccess(true);
+      setAlertContent('Failure!');
+      setSuccess(false);
       setOpen(false);
       console.log(error);
     }
@@ -197,20 +210,20 @@ function Description() {
     setClaim(true);
   };
 
+  // verify the asset, by a collection of address
   const onVerify = async () => {
     setIsBAYCVerifing(true);
-    const mainAddr = '0xF02e86D9E0eFd57aD034FaF52201B79917fE0713';
+    //TODO:get main address from the sbt
+    const mainAddr = '';
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
     const receiverAddr = await signer.getAddress();
-    console.log(receiverAddr);
-    //const usdAddr = '0x7dc9e01b3d835c9b944de2e86bcb0fa4c8c36bc8';//old contract address
-    const usdAddr = '0x65cafc0f6cc8b25ad20f59a98f72b7c5535510cc';
-    const plonk = new ethers.Contract(usdAddr, plonkABI.abi, signer);
+    const verifierAddr = '';// merkle verify contract address
+    const merkleVerifier = new ethers.Contract(verifierAddr, plonkABI.abi, signer);
     try {
       const [proof, rootVal] = await calculateMerkleProof(mainAddr);
       const signals = [rootVal, BigInt(receiverAddr)];
-      const result = await plonk.verifyProof(proof, signals);
+      const result = await merkleVerifier.verifyProof(proof, signals);
       setAlertContent('Verify Successfully!');
       setSuccess(result);
       console.log(result);
@@ -243,7 +256,7 @@ function Description() {
   const getSBT = async () => {
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
-    const usdAddr = '0x5edbdc67d24efdefe493a722265a70504ad10b76'; //
+    const usdAddr = '';
     console.log(sbtABI);
     sbt = new ethers.Contract(usdAddr, sbtABI.abi, signer);
     try {

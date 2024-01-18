@@ -15,7 +15,7 @@ const addrCollection = [
 ]
 
 // for verify the eth_addr ownership
-async function calculateSigProof(privateKey: string) {
+export async function calculateSigProof(privateKey: string) {
   // Connect to wallet, get address
   const provider = new providers.Web3Provider(window.ethereum as any);
   await provider.send('eth_requestAccounts', []);
@@ -23,10 +23,9 @@ async function calculateSigProof(privateKey: string) {
   const address = await signer.getAddress();
 
   // Load files and run proof locally
-  // TODO: sig proof file path
-  const zkFilePath = '../../../../public/circuits';
-  const wasmBuff = await getFileBuffer(`${zkFilePath}/circuit.wasm`);
-  const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuit_final.zkey`);
+  const zkFilePath = 'http://localhost:8082';
+  const wasmBuff = await getFileBuffer(`${zkFilePath}/circuits/eth_addr.wasm`);
+  const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuits/eth_addr.zkey`);
 
   const preTime = new Date().getTime();
   const proof = await generateSigProofCallData(privateKey, wasmBuff, zkeyBuff);
@@ -36,7 +35,7 @@ async function calculateSigProof(privateKey: string) {
 }
 
 // for verify the eth_addr hold certain resource
-export default async function calculateMerkleProof(mainAddr: string) {
+export async function calculateMerkleProof(mainAddr: string) {
   // Connect to wallet, get address
   const provider = new providers.Web3Provider(window.ethereum as any);
   await provider.send('eth_requestAccounts', []);
@@ -44,19 +43,16 @@ export default async function calculateMerkleProof(mainAddr: string) {
   const address = await signer.getAddress();
 
   // Load files and run proof locally
-  // TODO: zkey file path
-  //const zkFilePath = '../../../../public/circuits';
   const zkFilePath = 'http://localhost:8082';
-  // TODO: address set
   //const mtSs = await getFileString(`${zkFilePath}/mt_8192.txt`);
   const mtLeaves: BigInt[] = [];
   for (let i = 0; i < addrCollection.length; i++) {
     const addrHash = await poseidon1(BigInt(addrCollection[i]));
     mtLeaves.push(addrHash);
   }
-  const wasmBuff = await getFileBuffer(`${zkFilePath}/circuits/circuit.wasm`);
+  const wasmBuff = await getFileBuffer(`${zkFilePath}/circuits/merkle_tree.wasm`);
   //console.log(wasmBuff.toString('hex'));
-  const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuits/circuit_final.zkey`);
+  const zkeyBuff = await getFileBuffer(`${zkFilePath}/circuits/merkle_tree.zkey`);
   //console.log(zkeyBuff);
   // Load the Merkle Tree locally
   //const mt = MerkleTree.createFromStorageString(mtSs);
